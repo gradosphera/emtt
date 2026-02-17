@@ -25,6 +25,7 @@ arg-parse-mode = Режим обработки Telegram-сообщений
 arg-syslog-host = Хост сервера syslog
 arg-syslog-port = Порт сервера syslog
 arg-webhook-url = URL вебхука для пересылки сообщений (опционально, в дополнение или вместо Telegram)
+arg-proxy = URL прокси для исходящих соединений (поддерживает http://, https://, socks5:// и socks5h:// прокси)
 
 # Булевы значения
 true-value = да
@@ -55,7 +56,6 @@ forward-dm = Пересылка личных сообщений: { $dm }
 forward-channel = Пересылка сообщений из канала: { $channel }
 channel-disabled = Пересылка из канала отключена
 parse-mode = Режим обработки по умолчанию: { $parse_mode }
-syslog-listening = Ожидание syslog-сообщений на { $host }:{ $port }
 syslog-server = Запуск сервера syslog...
 ignoring-range-test = Игнорирую range test от { $from } (ID: { $id })
 no-handle-info = Нет информации об отправителе для сообщения с ID: { $id }
@@ -79,3 +79,4 @@ webhook-enabled = Пересылка в вебхук включена для: { 
 webhook-disabled = Вебхук отключён
 forwarded-to-webhook = Сообщение отправлено в вебхук (от { $from }): { $message }
 no-output-configured = Настройте пересылку в Telegram или вебхук
+proxy-enabled = Прокси включён: { $url }

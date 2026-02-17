@@ -3,9 +3,11 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use teloxide::{prelude::*, types::{ChatId, ParseMode}};
+use reqwest::Client;
 
-pub fn init_bot(token: String) -> Bot {
-    Bot::new(token)
+pub fn init_bot(token: String, client: Client) -> Bot {
+    // https://github.com/teloxide/teloxide/issues/223
+    Bot::with_client(token, client)
 }
 
 pub async fn send_message(

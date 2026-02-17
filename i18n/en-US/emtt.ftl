@@ -25,6 +25,7 @@ arg-parse-mode = Telegram message parse mode
 arg-syslog-host = Syslog server host
 arg-syslog-port = Syslog server port
 arg-webhook-url = Webhook URL for forwarding messages (optional, in addition to or instead of Telegram)
+arg-proxy = Proxy URL for outgoing connections (supports http://, https://, socks5:// and socks5h:// proxies)
 
 # Boolean values
 true-value = yes
@@ -55,7 +56,6 @@ forward-dm = Forwarding direct messages: { $dm }
 forward-channel = Forwarding channel messages: { $channel }
 channel-disabled = Channel forwarding is disabled
 parse-mode = Default parse mode: { $parse_mode }
-syslog-listening = Listening for syslog messages on { $host }:{ $port }
 syslog-server = Starting syslog server...
 ignoring-range-test = Ignoring range test message from { $from } (ID: { $id })
 no-handle-info = No sender information for message ID: { $id }
@@ -79,3 +79,4 @@ webhook-enabled = Webhook forwarding enabled to: { $url }
 webhook-disabled = Webhook forwarding disabled
 forwarded-to-webhook = Message forwarded to webhook (from { $from }): { $message }
 no-output-configured = At least one output (Telegram or webhook) must be configured
+proxy-enabled = Proxy enabled: { $url }

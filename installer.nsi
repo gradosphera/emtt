@@ -32,11 +32,13 @@ Var TokenField
 Var ChatIdField
 Var DmCheck
 Var ChannelField
+Var ProxyField
 
 Var token
 Var chatid
 Var dm
 Var channel
+Var proxyurl
 Var params
 
 !define MUI_ABORTWARNING
@@ -99,7 +101,7 @@ Section "Uninstall"
   DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\EMtT"
 SectionEnd
 
-; Страница конфигурации
+; Страница конфигурации (компактная версия)
 Function ConfigPage
   !insertmacro MUI_HEADER_TEXT "Настройка Easy Meshtastic to Telegram" "Укажите параметры для ярлыка в меню «Пуск»"
 
@@ -110,27 +112,29 @@ Function ConfigPage
     Abort
   ${EndIf}
 
-  ; Более компактная компоновка — всё помещается без обрезки
-  ${NSD_CreateLabel} 0u 5u 100% 10u "Токен Telegram-бота (обязательно):"
+  ${NSD_CreateLabel} 0u 0u 100% 9u "Токен Telegram-бота (обязательно):"
   Pop $0
-  ${NSD_CreatePassword} 0u 18u 100% 12u ""
+  ${NSD_CreatePassword} 0u 10u 100% 12u ""
   Pop $TokenField
 
-  ${NSD_CreateLabel} 0u 35u 100% 10u "ID чата Telegram (обязательно):"
+  ${NSD_CreateLabel} 0u 24u 100% 9u "ID чата Telegram (обязательно):"
   Pop $0
-  ${NSD_CreateText} 0u 48u 100% 12u ""
+  ${NSD_CreateText} 0u 34u 100% 12u ""
   Pop $ChatIdField
 
-  ${NSD_CreateLabel} 0u 65u 100% 10u "Пересылать личные сообщения из меш-сети:"
-  Pop $0
-  ${NSD_CreateCheckbox} 0u 78u 100% 12u "Включено (по умолчанию)"
+  ${NSD_CreateCheckbox} 0u 48u 100% 12u "Пересылать личные сообщения из меш-сети"
   Pop $DmCheck
   ${NSD_SetState} $DmCheck ${BST_CHECKED}
 
-  ${NSD_CreateLabel} 0u 95u 100% 10u "Пересылать сообщения из канала (опционально, «0» — основной канал):"
+  ${NSD_CreateLabel} 0u 62u 100% 9u "Пересылать сообщения из канала (опционально, «0» — основной канал):"
   Pop $0
-  ${NSD_CreateText} 0u 108u 100% 12u ""
+  ${NSD_CreateText} 0u 72u 100% 12u ""
   Pop $ChannelField
+
+  ${NSD_CreateLabel} 0u 86u 100% 9u "URL прокси (опционально, например socks5://127.0.0.1:1080):"
+  Pop $0
+  ${NSD_CreateText} 0u 96u 100% 12u ""
+  Pop $ProxyField
 
   nsDialogs::Show
 FunctionEnd
@@ -145,6 +149,7 @@ Function ConfigPageLeave
     StrCpy $dm "false"
   ${EndIf}
   ${NSD_GetText} $ChannelField $channel
+  ${NSD_GetText} $ProxyField $proxyurl
 
   ${If} $token == ""
     MessageBox MB_OK|MB_ICONEXCLAMATION "Токен бота Telegram обязателен!"
@@ -158,5 +163,8 @@ Function ConfigPageLeave
   StrCpy $params 'syslog --bot-token "$token" --chat-id "$chatid" --dm $dm'
   ${If} $channel != ""
     StrCpy $params '$params --channel "$channel"'
+  ${EndIf}
+  ${If} $proxyurl != ""
+    StrCpy $params '$params --proxy "$proxyurl"'
   ${EndIf}
 FunctionEnd

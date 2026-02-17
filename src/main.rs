@@ -6,7 +6,7 @@ use clap::{Parser, Subcommand, ValueEnum};
 use clap_i18n_richformatter::{clap_i18n, ClapI18nRichFormatter, init_clap_rich_formatter_localizer};
 use env_logger::Env;
 use minijinja::{context, Environment};
-use reqwest::Client;
+use reqwest::{ClientBuilder, Proxy};
 use serde::Serialize;
 use std::future::Future;
 use std::pin::Pin;
@@ -77,6 +77,10 @@ enum Commands {
         #[arg(long, env = "SYSLOG_PORT", default_value = "50514")]
         #[arg(help = fl!("arg-syslog-port"))]
         syslog_port: u16,
+
+        #[arg(long, env = "PROXY_URL")]
+        #[arg(help = fl!("arg-proxy"))]
+        proxy_url: Option<String>,
     },
 }
 // --- End Commands definition ---
@@ -140,6 +144,7 @@ struct Config {
     parse_mode: ParseModeOpt,
     syslog_host: String,
     syslog_port: u16,
+    proxy_url: Option<String>,
 }
 
 fn unescape_template(s: String) -> String {
@@ -235,6 +240,7 @@ async fn main() {
             parse_mode,
             syslog_host,
             syslog_port,
+            proxy_url,
         } => {
             let template = unescape_template(template);
             let config = Config {
@@ -247,6 +253,7 @@ async fn main() {
                 parse_mode,
                 syslog_host,
                 syslog_port,
+                proxy_url,
             };
 
             let use_telegram = config.bot_token.is_some() && config.chat_id.is_some();
@@ -278,17 +285,37 @@ async fn main() {
                 log::info!("{}", fl!("webhook-disabled"));
             }
 
+            let mut client_builder = ClientBuilder::new();
+
+            if let Some(proxy_url) = &config.proxy_url {
+                log::info!("{}", fl!("proxy-enabled", url = proxy_url));
+
+                match Proxy::all(proxy_url) {
+                    Ok(proxy) => {
+                        client_builder = client_builder.proxy(proxy);
+                    }
+                    Err(e) => {
+                        log::error!("Invalid proxy URL '{}': {}", proxy_url, e);
+                        return;
+                    }
+                }
+            }
+
             print_sponsorship_message();
 
-            log::info!("{}", fl!("syslog-listening", host = config.syslog_host.clone(), port = config.syslog_port));
+            let http_client = match client_builder.build() {
+                Ok(c) => c,
+                Err(e) => {
+                    log::error!("Failed to build HTTP client: {}", e);
+                    return;
+                }
+            };
 
             let bot = if use_telegram {
-                Some(telegram::init_bot(config.bot_token.clone().unwrap()))
+                Some(telegram::init_bot(config.bot_token.clone().unwrap(), http_client.clone()))
             } else {
                 None
             };
-
-            let http_client = Client::new();
 
             let sender = {
                 let bot = bot.clone();
