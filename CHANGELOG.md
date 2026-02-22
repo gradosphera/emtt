@@ -5,13 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.2.1] - 2026-02-22
 
 ### Added
 
-- `--log-level` / `-l` CLI argument to set logging verbosity (`error`, `warn`, `info`, `debug`, `trace`)
-- Default log level changed to `debug` (previously `info`)
-- Log level can now be set via CLI argument (takes precedence over `LOG_LEVEL` environment variable)
+- `--log-level` / `-l` CLI argument to set logging verbosity (`error`, `warn`, `info`, `debug`, `trace`).
+
+### Updated
+
+- Default log level changed to `debug` (previously `info`).
 
 ## [1.2.0] - 2026-02-17
 
