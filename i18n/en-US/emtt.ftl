@@ -26,6 +26,7 @@ arg-syslog-host = Syslog server host
 arg-syslog-port = Syslog server port
 arg-webhook-url = Webhook URL for forwarding messages (optional, in addition to or instead of Telegram)
 arg-proxy = Proxy URL for outgoing connections (supports http://, https://, socks5:// and socks5h:// proxies)
+arg-log-level = Log level
 
 # Boolean values
 true-value = yes
@@ -35,6 +36,13 @@ false-value = no
 parse-mode-none = Plain text
 parse-mode-html = HTML
 parse-mode-markdown = Markdown
+
+# Log levels (used in --help)
+log-level-error = Error
+log-level-warn = Warning
+log-level-info = Information
+log-level-debug = Debug (default)
+log-level-trace = Trace
 
 # Sponsorship messages
 oss-sponsorship-message =

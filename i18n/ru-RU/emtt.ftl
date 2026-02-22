@@ -26,6 +26,7 @@ arg-syslog-host = Хост сервера syslog
 arg-syslog-port = Порт сервера syslog
 arg-webhook-url = URL вебхука для пересылки сообщений (опционально, в дополнение или вместо Telegram)
 arg-proxy = URL прокси для исходящих соединений (поддерживает http://, https://, socks5:// и socks5h:// прокси)
+arg-log-level = Уровень логирования
 
 # Булевы значения
 true-value = да
@@ -35,6 +36,13 @@ false-value = нет
 parse-mode-none = Обычный текст
 parse-mode-html = HTML
 parse-mode-markdown = Markdown
+
+# Уровни логирования (используются в --help)
+log-level-error = Ошибка
+log-level-warn = Предупреждение
+log-level-info = Информация
+log-level-debug = Отладка (по умолчанию)
+log-level-trace = Трассировка
 
 # Сообщения о поддержке проекта
 oss-sponsorship-message =

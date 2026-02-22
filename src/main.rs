@@ -12,6 +12,7 @@ use std::future::Future;
 use std::pin::Pin;
 use std::sync::LazyLock;
 use teloxide::types::ParseMode;
+use log::LevelFilter;
 
 mod lang;
 mod syslog;
@@ -26,6 +27,27 @@ pub struct MessageData {
     snr: Option<f32>,
     rssi: Option<i32>,
     hops_away: Option<i32>,
+}
+
+// Log level (global CLI arg + localized --help)
+#[derive(Clone, Copy, Debug, PartialEq, Eq, ValueEnum)]
+enum LogLevel {
+    #[value(name = "error", help = fl!("log-level-error"))]
+    Error,
+    #[value(name = "warn", help = fl!("log-level-warn"))]
+    Warn,
+    #[value(name = "info", help = fl!("log-level-info"))]
+    Info,
+    #[value(name = "debug", help = fl!("log-level-debug"))]
+    Debug,
+    #[value(name = "trace", help = fl!("log-level-trace"))]
+    Trace,
+}
+
+impl std::fmt::Display for LogLevel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.to_possible_value().unwrap().get_name())
+    }
 }
 
 // --- Define Commands enum BEFORE Cli struct ---
@@ -119,6 +141,16 @@ fn localize_bool(value: bool) -> String {
 #[command(next_help_heading = &**ARG_HELP_HEADING)]
 #[command(help_template = &*HELP_TEMPLATE)]
 struct Cli {
+    #[arg(
+        long,
+        short = 'l',
+        env = "LOG_LEVEL",
+        default_value_t = LogLevel::Debug,
+        value_enum,
+        help = fl!("arg-log-level"),
+    )]
+    log_level: LogLevel,
+
     #[command(subcommand)]
     command: Commands,
 }
@@ -210,17 +242,7 @@ async fn main() {
     init_clap_rich_formatter_localizer();
     lang::init_localizer();
 
-    let env = Env::new()
-        .filter_or("LOG_LEVEL", "info")
-        .write_style_or("LOG_STYLE", "auto");
-    env_logger::Builder::from_env(env)
-        .format_timestamp(Some(env_logger::TimestampPrecision::Seconds))
-        .format_module_path(false)
-        .format_target(false)
-        .format_source_path(false)
-        .init();
-
-    // Use the i18n-aware parsing method
+    // Parse CLI FIRST so we can use --log-level (CLI > LOG_LEVEL env > default debug)
     let cli = match Cli::try_parse() {
         Ok(cli) => cli,
         Err(e) => {
@@ -228,6 +250,25 @@ async fn main() {
             e.exit();
         }
     };
+
+    // Map LogLevel to LevelFilter
+    let level_filter = match cli.log_level {
+        LogLevel::Error => LevelFilter::Error,
+        LogLevel::Warn => LevelFilter::Warn,
+        LogLevel::Info => LevelFilter::Info,
+        LogLevel::Debug => LevelFilter::Debug,
+        LogLevel::Trace => LevelFilter::Trace,
+    };
+
+    // Initialize logger with direct filter_level (respects CLI > env > debug) and LOG_STYLE env
+    let env = Env::new().write_style_or("LOG_STYLE", "auto");
+    env_logger::Builder::from_env(env)
+        .filter_level(level_filter)
+        .format_timestamp(Some(env_logger::TimestampPrecision::Seconds))
+        .format_module_path(false)
+        .format_target(false)
+        .format_source_path(false)
+        .init();
 
     match cli.command {
         Commands::Syslog {
