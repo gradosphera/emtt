@@ -50,11 +50,11 @@ struct ViaInfo {
     hop_lim: Option<u32>,
     hop_start: Option<u32>,
     fr: Option<u32>,
+    is_mqtt: bool,
     timestamp: u64,
 }
 
 struct HandleInfo {
-    is_mqtt: bool,
     vias: HashMap<String, ViaInfo>,
 }
 
@@ -108,7 +108,6 @@ fn parse_syslog_message(text: &str) -> Result<(String, String), &'static str> {
 
 async fn parse_and_store_nodeinfo(
     message: &str,
-    handle_infos: &Arc<Mutex<HashMap<u32, HandleInfo>>>,
     known_nodes: &Arc<Mutex<HashMap<u32, NodeInfo>>>,
 ) -> bool {
     if let Some(caps) = NODEINFO_RE.captures(message) {
@@ -118,15 +117,6 @@ async fn parse_and_store_nodeinfo(
             Ok(id) => id,
             Err(_) => return false,
         };
-
-        let handles = handle_infos.lock().await;
-        if let Some(h) = handles.get(&id) {
-            if h.is_mqtt {
-                debug!("Skipping MQTT-forwarded nodeinfo for node_id: 0x{:08x}", id);
-                return true;
-            }
-        }
-        drop(handles);
 
         let mut nodes = known_nodes.lock().await;
         nodes.insert(
@@ -150,9 +140,11 @@ async fn parse_and_store_handle_received(
     handle_infos: &Arc<Mutex<HashMap<u32, HandleInfo>>>,
 ) -> bool {
     if let Some(caps) = HANDLE_RECEIVED_RE.captures(message) {
-        // h_type = &caps[1]; not used
         let mut content = caps[2].to_string();
-        content = content.replace(',', " ").replace(" = ", "=");
+        content = content
+            .replace(',', " ")
+            .replace(" = ", "=")
+            .replace("via ", "via=");
 
         let mut fields: HashMap<String, String> = HashMap::new();
         for pair in content.split_whitespace() {
@@ -190,15 +182,12 @@ async fn parse_and_store_handle_received(
         let hop_lim = fields.get("HopLim").and_then(|s| s.parse::<u32>().ok());
         let hop_start = fields.get("hopStart").and_then(|s| s.parse::<u32>().ok());
         let via_str = fields.get("via").cloned().unwrap_or_default();
-        let is_mqtt = via_str == "MQTT";
 
         let mut handles = handle_infos.lock().await;
         let entry = handles.entry(id).or_insert(HandleInfo {
-            is_mqtt: false,
             vias: HashMap::new(),
         });
 
-        entry.is_mqtt = is_mqtt;
         entry.vias.insert(
             ident.to_string(),
             ViaInfo {
@@ -209,13 +198,14 @@ async fn parse_and_store_handle_received(
                 hop_lim,
                 hop_start,
                 fr,
+                is_mqtt: via_str == "MQTT",
                 timestamp: now(),
             },
         );
 
         debug!(
-            "Stored handle info for text msg id: 0x{:08x}, via: {}, ch: {}, is_mqtt: {}",
-            id, ident, ch, is_mqtt
+            "Stored handle info for text msg id: 0x{:08x}, via: {}, ch: {}, to: 0x{:08x}, via: {}",
+            id, ident, ch, to.unwrap_or(0), via_str
         );
         return true;
     }
@@ -256,8 +246,8 @@ where
             return true;
         }
 
-        let mut handles = handle_infos.lock().await;
-        let h = match handles.get_mut(&id) {
+        let handles = handle_infos.lock().await;
+        let h = match handles.get(&id) {
             Some(h) => h,
             None => {
                 warn!("{}", fl!("no-handle-info", id = format!("0x{:08x}", id)));
@@ -266,30 +256,17 @@ where
         };
 
         let via_key = ident.to_string();
-        let via_info = match h.vias.remove(&via_key) {
-            Some(v) => v,
+        let via_info = match h.vias.get(&via_key) {
+            Some(v) => v.clone(),
             None => {
                 warn!("{}", fl!("no-via-info", id = format!("0x{:08x}", id), via = ident));
-                if h.vias.is_empty() {
-                    handles.remove(&id);
-                }
                 return true;
             }
         };
+        drop(handles); // release lock early
 
-        if now() - via_info.timestamp > 180 {
-            warn!("{}", fl!("stale-handle-info", id = format!("0x{:08x}", id)));
-            if h.vias.is_empty() {
-                handles.remove(&id);
-            }
-            return true;
-        }
-
-        if h.is_mqtt {
+        if via_info.is_mqtt {
             debug!("{}", fl!("skipping-mqtt", id = format!("0x{:08x}", id)));
-            if h.vias.is_empty() {
-                handles.remove(&id);
-            }
             return true;
         }
 
@@ -305,21 +282,12 @@ where
 
         if !forward {
             info!("{}", fl!("ignoring-text-msg", id = format!("0x{:08x}", id), ch = via_info.ch, to = format!("0x{:08x}", via_info.to)));
-            if h.vias.is_empty() {
-                handles.remove(&id);
-            }
             return true;
         }
 
         let snr = via_info.snr;
         let rssi = via_info.rssi;
         let hops_away = via_info.hop_start.zip(via_info.hop_lim).map(|(hs, hl)| hs.saturating_sub(hl) as i32);
-
-        if h.vias.is_empty() {
-            handles.remove(&id);
-        }
-
-        drop(handles);
 
         // Format and send to Telegram
         let mut from_name = known_nodes
@@ -416,7 +384,7 @@ where
             }
         };
 
-        if parse_and_store_nodeinfo(&message, &handle_infos, &known_nodes).await {
+        if parse_and_store_nodeinfo(&message, &known_nodes).await {
             continue;
         }
 
