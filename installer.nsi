@@ -33,12 +33,14 @@ Var ChatIdField
 Var DmCheck
 Var ChannelField
 Var ProxyField
+Var ApiServerField
 
 Var token
 Var chatid
 Var dm
 Var channel
 Var proxyurl
+Var apiserver
 Var params
 
 !define MUI_ABORTWARNING
@@ -139,6 +141,11 @@ Function ConfigPage
   ${NSD_CreateText} 0u 96u 100% 12u ""
   Pop $ProxyField
 
+  ${NSD_CreateLabel} 0u 110u 100% 9u "Telegram Bot API (опционально, например http://127.0.0.1:8081):"
+  Pop $0
+  ${NSD_CreateText} 0u 120u 100% 12u ""
+  Pop $ApiServerField
+
   nsDialogs::Show
 FunctionEnd
 
@@ -163,12 +170,15 @@ Function ConfigPageLeave
     Abort
   ${EndIf}
 
-  StrCpy $params 'syslog --bot-token "$token" --chat-id "$chatid" --dm $dm'
+    StrCpy $params 'syslog --bot-token "$token" --chat-id "$chatid" --dm $dm'
   ${If} $channel != ""
     StrCpy $params '$params --channel "$channel"'
   ${EndIf}
   ${If} $proxyurl != ""
     StrCpy $params '$params --proxy "$proxyurl"'
+  ${EndIf}
+  ${If} $apiserver != ""
+    StrCpy $params '$params --api-server "$apiserver"'
   ${EndIf}
 FunctionEnd
 

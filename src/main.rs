@@ -103,6 +103,10 @@ enum Commands {
         #[arg(long, env = "PROXY_URL")]
         #[arg(help = fl!("arg-proxy"))]
         proxy_url: Option<String>,
+
+        #[arg(long, env = "TELEGRAM_API_SERVER")]
+        #[arg(help = fl!("arg-api-server"))]
+        api_server: Option<String>,
     },
 }
 // --- End Commands definition ---
@@ -177,6 +181,7 @@ struct Config {
     syslog_host: String,
     syslog_port: u16,
     proxy_url: Option<String>,
+    api_server: Option<String>,
 }
 
 fn unescape_template(s: String) -> String {
@@ -282,6 +287,7 @@ async fn main() {
             syslog_host,
             syslog_port,
             proxy_url,
+            api_server,
         } => {
             let template = unescape_template(template);
             let config = Config {
@@ -295,6 +301,7 @@ async fn main() {
                 syslog_host,
                 syslog_port,
                 proxy_url,
+                api_server,
             };
 
             let use_telegram = config.bot_token.is_some() && config.chat_id.is_some();
@@ -310,6 +317,12 @@ async fn main() {
             if use_telegram {
                 log::info!("{}", fl!("telegram-chat-id", chat_id = config.chat_id.unwrap()));
                 log::info!("{}", fl!("parse-mode", parse_mode = format!("{:?}", config.parse_mode)));
+
+                if let Some(ref server) = config.api_server {
+                    log::info!("{}", fl!("bot-api-server-custom", url = server));
+                } else {
+                    log::info!("{}", fl!("bot-api-server-official"));
+                }
             }
 
             log::info!("{}", fl!("forward-dm", dm = localize_bool(config.dm)));
@@ -353,7 +366,22 @@ async fn main() {
             };
 
             let bot = if use_telegram {
-                Some(telegram::init_bot(config.bot_token.clone().unwrap(), http_client.clone()))
+                let token = config.bot_token.clone().unwrap();
+                let bot_base = telegram::init_bot(token, http_client.clone());
+
+                let bot = if let Some(server_url) = &config.api_server {
+                    match reqwest::Url::parse(server_url) {
+                        Ok(url) => bot_base.set_api_url(url),
+                        Err(e) => {
+                            log::error!("Invalid Telegram Bot API server URL '{}': {}", server_url, e);
+                            return;
+                        }
+                    }
+                } else {
+                    bot_base
+                };
+
+                Some(bot)
             } else {
                 None
             };

@@ -26,6 +26,7 @@ arg-syslog-host = Syslog server host
 arg-syslog-port = Syslog server port
 arg-webhook-url = Webhook URL for forwarding messages (optional, in addition to or instead of Telegram)
 arg-proxy = Proxy URL for outgoing connections (supports http://, https://, socks5:// and socks5h:// proxies)
+arg-api-server = Telegram Bot API (optional; default = official api.telegram.org; for self-hosted use http://127.0.0.1:8081)
 arg-log-level = Log level
 
 # Boolean values
@@ -88,3 +89,5 @@ webhook-disabled = Webhook forwarding disabled
 forwarded-to-webhook = Message forwarded to webhook (from { $from }): { $message }
 no-output-configured = At least one output (Telegram or webhook) must be configured
 proxy-enabled = Proxy enabled: { $url }
+bot-api-server-official = Using official Telegram Bot API (api.telegram.org)
+bot-api-server-custom   = Using custom Telegram Bot API server: { $url }

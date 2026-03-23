@@ -26,6 +26,7 @@ arg-syslog-host = Хост сервера syslog
 arg-syslog-port = Порт сервера syslog
 arg-webhook-url = URL вебхука для пересылки сообщений (опционально, в дополнение или вместо Telegram)
 arg-proxy = URL прокси для исходящих соединений (поддерживает http://, https://, socks5:// и socks5h:// прокси)
+arg-api-server = Telegram Bot API (опционально; по умолчанию официальный api.telegram.org; для self-hosted: http://127.0.0.1:8081)
 arg-log-level = Уровень логирования
 
 # Булевы значения
@@ -88,3 +89,5 @@ webhook-disabled = Вебхук отключён
 forwarded-to-webhook = Сообщение отправлено в вебхук (от { $from }): { $message }
 no-output-configured = Настройте пересылку в Telegram или вебхук
 proxy-enabled = Прокси включён: { $url }
+bot-api-server-official = Используется официальный Telegram Bot API (api.telegram.org)
+bot-api-server-custom   = Используется собственный сервер Telegram Bot API: { $url }
