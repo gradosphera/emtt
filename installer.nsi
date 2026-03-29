@@ -160,6 +160,7 @@ Function ConfigPageLeave
   ${EndIf}
   ${NSD_GetText} $ChannelField $channel
   ${NSD_GetText} $ProxyField $proxyurl
+  ${NSD_GetText} $ApiServerField $apiserver
 
   ${If} $token == ""
     MessageBox MB_OK|MB_ICONEXCLAMATION "Токен бота Telegram обязателен!"
