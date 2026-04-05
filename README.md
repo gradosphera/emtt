@@ -87,6 +87,12 @@ flowchart LR
 * **Готовые сборки и приоритетная поддержка:** доступны для подписчиков [Boosty](https://boosty.to/mansmarthome/posts/ca2ddb88-d808-419b-8faf-5d5619f66b95).
 * **Вопросы и обсуждения:** присоединяйтесь к моему [Telegram-чату](https://t.me/+BBhPhVEURE1iZTZi).
 
+### Товарные знаки
+
+Meshtastic® is a registered trademark of Meshtastic LLC. Meshtastic software components are released under various licenses, see [GitHub](https://github.com/meshtastic) for details. No warranty is provided — use at your own risk.
+
+This site is not affiliated with or endorsed by the Meshtastic project. The official website is [meshtastic.org](https://meshtastic.org/).
+
 [releases-shield]: https://img.shields.io/badge/1.2.2-версия-blue?logo=github&style=flat-square&cacheSeconds=86400
 [releases]: https://github.com/black-roland/emtt/blob/main/LICENSE
 [telegram-shield]: https://img.shields.io/badge/Telegram-чат-blue?style=flat-square&logo=telegram
