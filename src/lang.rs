@@ -43,3 +43,11 @@ pub fn init_localizer() {
         bundle.set_use_isolating(false);
     });
 }
+
+pub fn localize_bool(value: bool) -> String {
+    if value {
+        fl!("true-value").to_string()
+    } else {
+        fl!("false-value").to_string()
+    }
+}

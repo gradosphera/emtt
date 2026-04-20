@@ -128,14 +128,6 @@ pub static HELP_TEMPLATE: LazyLock<String> = LazyLock::new(|| {
     )
 });
 
-fn localize_bool(value: bool) -> String {
-    if value {
-        fl!("true-value").to_string()
-    } else {
-        fl!("false-value").to_string()
-    }
-}
-
 #[derive(Parser)]
 #[clap_i18n]
 #[command(name = "emtt")]
@@ -325,7 +317,7 @@ async fn main() {
                 }
             }
 
-            log::info!("{}", fl!("forward-dm", dm = localize_bool(config.dm)));
+            log::info!("{}", fl!("forward-dm", dm = lang::localize_bool(config.dm)));
 
             if let Some(ch) = config.channel {
                 log::info!("{}", fl!("forward-channel", channel = ch));

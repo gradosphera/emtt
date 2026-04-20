@@ -17,6 +17,8 @@ use super::MessageData;
 // Import the fl! macro from the crate root (which re-exports it from lang)
 use crate::fl;
 
+use crate::lang;
+
 use once_cell::sync::Lazy;
 
 static NODEINFO_RE: Lazy<Regex> = Lazy::new(|| {
@@ -183,6 +185,8 @@ async fn parse_and_store_handle_received(
         let hop_start = fields.get("hopStart").and_then(|s| s.parse::<u32>().ok());
         let via_str = fields.get("via").cloned().unwrap_or_default();
 
+        let is_mqtt = via_str == "MQTT";
+
         let mut handles = handle_infos.lock().await;
         let entry = handles.entry(id).or_insert(HandleInfo {
             vias: HashMap::new(),
@@ -198,15 +202,18 @@ async fn parse_and_store_handle_received(
                 hop_lim,
                 hop_start,
                 fr,
-                is_mqtt: via_str == "MQTT",
+                is_mqtt,
                 timestamp: now(),
             },
         );
 
-        debug!(
-            "Stored handle info for text msg id: 0x{:08x}, via: {}, ch: {}, to: 0x{:08x}, via: {}",
-            id, ident, ch, to.unwrap_or(0), via_str
-        );
+        debug!("{}", fl!("stored-handle-info",
+            id = format!("0x{:08x}", id),
+            via = ident,
+            ch = ch,
+            to = format!("0x{:08x}", to.unwrap_or(0)),
+            is_mqtt = lang::localize_bool(is_mqtt)
+        ));
         return true;
     }
 

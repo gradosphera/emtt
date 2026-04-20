@@ -71,6 +71,7 @@ no-handle-info = Нет информации об отправителе для 
 no-via-info = Нет информации о шлюзе для сообщения с ID: { $id }, через: { $via }
 stale-handle-info = Устаревшая информация об отправителе для сообщения с ID: { $id }
 skipping-mqtt = Пропускаю сообщение, пересланное через MQTT, для сообщения с ID: { $id }
+stored-handle-info = Сохранены метаданные для сообщения с ID: { $id }, через: { $via }, канал: { $ch }, адресат: { $to }, MQTT: { $is_mqtt }
 ignoring-text-msg = Пропускаю текстовое сообщение с ID: { $id }, канал: { $ch }, получатель: { $to }
 forwarded-to-telegram = Сообщение отправлено в Telegram (от { $from }): { $message }
 failed-to-render = Ошибка рендеринга шаблона: { $error }

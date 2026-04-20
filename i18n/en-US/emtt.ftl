@@ -71,6 +71,7 @@ no-handle-info = No sender information for message ID: { $id }
 no-via-info = No gateway information for message ID: { $id }, via: { $via }
 stale-handle-info = Stale sender information for message ID: { $id }
 skipping-mqtt = Skipping MQTT-forwarded text for message ID: { $id }
+stored-handle-info = Stored handle info for text msg ID: { $id }, via: { $via }, ch: { $ch }, to: { $to }, is_mqtt: { $is_mqtt }
 ignoring-text-msg = Ignoring text message ID: { $id }, channel: { $ch }, to: { $to }
 forwarded-to-telegram = Message forwarded to Telegram (from { $from }): { $message }
 failed-to-render = Failed to render template: { $error }
