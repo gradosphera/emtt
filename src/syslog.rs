@@ -28,7 +28,7 @@ static HANDLE_RECEIVED_RE: Lazy<Regex> = Lazy::new(|| {
 });
 
 static TEXT_MSG_RE: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"Received text msg from=0x([0-9a-fA-F]+), id=0x([0-9a-fA-F]+), msg=(.+)").unwrap()
+    Regex::new(r"(?s)Received text msg from=0x([0-9a-fA-F]+), id=0x([0-9a-fA-F]+), msg=(.+)").unwrap()
 });
 
 static RANGE_TEST_RE: Lazy<Regex> = Lazy::new(|| {
@@ -239,7 +239,10 @@ where
         let text = caps[3].to_string();
         let from_hex = format!("0x{:08x}", from);
         let formatted_id = format!("0x{:08x}", id);
-        info!("{}", fl!("received-text-msg", from = from_hex.as_str(), id = formatted_id.as_str(), text = text.as_str()));
+
+        // Escape newlines so the log entry stays on a single line
+        let text_for_log = text.replace('\n', "\\n").replace('\r', "\\r");
+        info!("{}", fl!("received-text-msg", from = from_hex.as_str(), id = formatted_id.as_str(), text = text_for_log.as_str()));
 
         if RANGE_TEST_RE.is_match(&text) {
             debug!("{}", fl!("ignoring-range-test", from = from_hex, id = format!("0x{:08x}", id)));
