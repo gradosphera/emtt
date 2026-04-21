@@ -127,7 +127,8 @@ emtt syslog --bot-token=7726737401:... --chat-id=-1001234567890 \
 ## Поддержка и обратная связь
 
 - **Баг-репорты и предложения:** пожалуйста, создавайте [issues](https://github.com/black-roland/emtt/issues) на GitHub.
-- **Готовые сборки и приоритетная поддержка:** доступны для подписчиков [Boosty](https://boosty.to/mansmarthome/posts/ca2ddb88-d808-419b-8faf-5d5619f66b95).
+- **Pull requests и улучшения документации** приветствуются — см. [`CONTRIBUTING.md`](https://github.com/black-roland/emtt?tab=contributing-ov-file).
+- **Готовые сборки и приоритетная поддержка** доступны для подписчиков [Boosty](https://boosty.to/mansmarthome/posts/ca2ddb88-d808-419b-8faf-5d5619f66b95).
 - **Вопросы и обсуждения:** присоединяйтесь к [Telegram-чату](https://t.me/+BBhPhVEURE1iZTZi).
 
 ## Товарные знаки
