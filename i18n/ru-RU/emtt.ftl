@@ -4,10 +4,9 @@ app-description = Мост между Meshtastic и Telegram
 app-long-description =
   Easy Meshtastic to Telegram
 
-  Пересылает сообщения из сети Meshtastic в Telegram чаты.
+  Пересылает сообщения из сети Meshtastic в Telegram-чаты.
 
-  Страница проекта: https://github.com/black-roland/emtt
-  Лицензия: MPL 2.0
+  Информация о лицензиях и товарных знаках: https://github.com/black-roland/emtt
 
 # Добавлено для шаблона справки
 usage = Использование

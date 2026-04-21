@@ -6,8 +6,7 @@ app-long-description =
 
   Forwards messages from Meshtastic network to Telegram chats.
 
-  Project page: https://github.com/black-roland/emtt
-  License: MPL 2.0
+  License and trademark details: https://github.com/black-roland/emtt
 
 # Added for help template
 usage = Usage
