@@ -1,6 +1,7 @@
 # Easy Meshtastic to Telegram
 
 [![Версия][releases-shield]][releases]
+[![Подробности][blog-shield]][blog]
 [![Boosty][boosty-shield]][boosty]
 [![Telegram][telegram-shield]][telegram]
 
@@ -143,7 +144,9 @@ MPL-2.0 — подробности в файле [LICENSE](https://github.com/bl
 
 [releases-shield]: https://img.shields.io/badge/1.2.2-версия-blue?logo=github&style=flat-square&cacheSeconds=86400
 [releases]: https://github.com/black-roland/emtt/blob/master/CHANGELOG.md
-[telegram-shield]: https://img.shields.io/badge/Telegram-чат-blue?style=flat-square&logo=telegram
-[telegram]: https://t.me/+BBhPhVEURE1iZTZi
+[blog-shield]: https://img.shields.io/badge/Демо-cc3336?style=flat-square&logo=readthedocs
+[blog]: https://mansmarthome.info/posts/radio/emtt-most-meshtastic-v-telegram-uviedomlieniia-biez-intiernieta/?utm_source=github&utm_medium=referral&utm_campaign=emtt
 [boosty-shield]: https://img.shields.io/badge/Boosty-готовые_сборки-orange?style=flat-square&logo=boosty
 [boosty]: https://boosty.to/mansmarthome/posts/ca2ddb88-d808-419b-8faf-5d5619f66b95
+[telegram-shield]: https://img.shields.io/badge/Telegram-чат-blue?style=flat-square&logo=telegram
+[telegram]: https://t.me/+BBhPhVEURE1iZTZi
